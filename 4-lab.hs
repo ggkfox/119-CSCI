@@ -42,8 +42,8 @@ toRE w = toRE' w [] where
 emptiness :: RegExp -> Bool
 emptiness Empty = True
 emptiness (Letter a) = False
-emptiness (Union a b) = emptiness (a) && emptiness (b)
-emptiness (Cat a b) = emptiness (a) || emptiness (b)
+emptiness (Union a b) = emptiness a && emptiness b
+emptiness (Cat a b) = emptiness a || emptiness b
 emptiness (Star a) = False
 
 --unitarity
@@ -51,16 +51,16 @@ unitarity :: RegExp -> Bool
 unitarity Empty = False
 unitarity (Letter a) = False
 unitarity (Union a b) = or [unitarity a && emptiness b, unitarity a && emptiness b, unitarity a && unitarity b]
-unitarity (Cat a b) = undefined
-unitarity (Star a) = undefined
+unitarity (Cat a b) = unitarity a && unitarity b
+unitarity (Star a) = emptiness a || unitarity a
 
 --bypassability
 bypassability :: RegExp -> Bool
 bypassability Empty = False
 bypassability (Letter a) = False
-bypassability (Union a b) = undefined
-bypassability (Cat a b) = undefined
-bypassability (Star a) = undefined
+bypassability (Union a b) = bypassability a || bypassability b
+bypassability (Cat a b) = bypassability a && bypassability b
+bypassability (Star a) = True
 
 --infiniteness
 infiniteness :: RegExp -> Bool
