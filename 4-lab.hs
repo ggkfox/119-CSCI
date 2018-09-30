@@ -66,33 +66,35 @@ bypassability (Star a) = True
 infiniteness :: RegExp -> Bool
 infiniteness Empty = False
 infiniteness (Letter a) = False
-infiniteness (Union a b) = undefined
-infiniteness (Cat a b) = undefined
-infiniteness (Star a) = undefined
+infiniteness (Union a b) = infiniteness a || infiniteness b
+infiniteness (Cat a b) = infiniteness a && not (infiniteness b) || (not (infiniteness a) && infiniteness b)
+infiniteness (Star a) = not (emptiness a) && not (unitarity a)
 
 --reversal
 reversal :: RegExp -> RegExp
-reversal Empty = undefined
-reversal (Letter a) = undefined
-reversal (Union a b) = undefined
-reversal (Cat a b) = undefined
-reversal (Star a) = undefined
+reversal Empty = Empty
+reversal (Letter a) = Letter a
+reversal (Union a b) = Union (reversal a) (reversal b)
+reversal (Cat a b) = Cat (reversal a) (reversal b)
+reversal (Star a) = Star (reversal a)
 
 --leftQuotient
--- leftQuotient :: Char -> RegExp -> RegExp
--- leftQuotient Empty = undefined
--- leftQuotient (Letter a) = undefined
--- leftQuotient (Union a b) = undefined
--- leftQuotient (Cat a b) = undefined
--- leftQuotient (Star a) = undefined
+leftQuotient :: Char -> RegExp -> RegExp
+leftQuotient x Empty = Empty
+leftQuotient x (Letter a) = if a == x then Star(Empty) else Empty
+leftQuotient x (Union a b) = Union (leftQuotient x a) (leftQuotient x b)
+leftQuotient x (Cat a b) = if bypassability a then Union (Cat (leftQuotient x a) b) (leftQuotient x b)
+                           else Cat (leftQuotient x a) b
+leftQuotient x (Star a) = Cat (leftQuotient x a) (Star a)
 
 --nonemptyPart
 nonemptyPart :: RegExp -> RegExp
-nonemptyPart Empty = undefined
-nonemptyPart (Letter a) = undefined
-nonemptyPart (Union a b) = undefined
-nonemptyPart (Cat a b) = undefined
-nonemptyPart (Star a) = undefined
+nonemptyPart Empty = Empty
+nonemptyPart (Letter a) = Letter a
+nonemptyPart (Union a b) = Union (nonemptyPart a) (nonemptyPart b)
+nonemptyPart (Cat a b) = if bypassability a then Union (Cat (nonemptyPart a) b) (nonemptyPart b)
+                         else Cat (nonemptyPart a) b
+nonemptyPart (Star a) = Cat (nonemptyPart a) (Star a)
 
 
 
@@ -105,11 +107,15 @@ nonemptyPart (Star a) = undefined
 -- splits xs = list of all possible splits of xs, in order. For example,
 -- splits "abc" = [("","abc"), ("a","bc"), ("ab","c"), ("abc","")]
 splits :: [a] -> [([a], [a])]
-splits xs = undefined
+splits xs = [(take x xs, drop x xs) | x <- [0..length xs]]
 
 
 match1 :: RegExp -> String -> Bool
-match1 r w = undefined
+match1 Empty w = False
+match1 (Letter a) w = w == [a]
+match1 (Union a b) w = match1 a w || match1 b w
+match1 (Cat a b) w = and [(match1 a x) && (match1 b y) | (x,y) <- (splits w)]
+match1 (Star a) w = (w == "") || and [(x /= "") && (match1 a x) && (match1 (Star a) y) | (x,y) <- splits w]
 
 
 match2 :: RegExp -> String -> Bool
