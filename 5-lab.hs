@@ -22,8 +22,7 @@ unique (x:xs) = (not (elem x xs)) && (unique xs)
 -- (4) Transition relation is a function from qs and sigma to qs (exactly one
 --     output state for each state and letter from sigma)
 checkFSM :: FSM -> Bool
--- checkFSM (qs, s, fs, ts) = unique qs && elem s qs && and[elem f qs | f <- fs] && and[elem b sigma | (a,b,c) <- ts] && unique [(a,b) | (a,b,c) <- ts]
-checkFSM (qs, s, fs, ts) = [unique qs && elem s qs , and[elem f qs | f <- fs] , and[elem b sigma | (a,b,c) <- ts] , unique [(a,b) | (a,b,c) <- ts]]
+checkFSM (qs, s, fs, ts) = unique qs && elem s qs && and[elem f qs | f <- fs] && and[elem b sigma | (a,b,c) <- ts] && unique [(a,b) | (a,b,c) <- ts]
 --               states are unique | start is unique |  finish states exist   |       letter is in sigma        |   no state points to 2 diff states
 
 -- Gives the transition function of the machine as a function
@@ -62,8 +61,8 @@ test1 = ([1,2],1,[2],[(1,'a',1),(1,'b',2),(2,'a',2),(2,'b',1)])
 -- Define a machine that accepts exactly the strings that do not contain "aab"
 -- as a substring and test it adequately
 test2 :: FSM
-test2 = ([1,2,3,4],1,[5],[(1,'a',2),(1,'b',1),(2,'a',3),(2,'b',1),(3,'a',3),(3,'b',4),(4,'a',4),(4,'b',4)])
+test2 = ([1,2,3,4],1,[4],[(1,'a',2),(1,'b',1),(2,'a',3),(2,'b',1),(3,'a',3),(3,'b',4),(4,'a',4),(4,'b',4)])
 
 -- Define a machine that accepts all strings that end in "ab" and test
 test3 :: FSM
-test3 = ([1,2,3],1,[4],[(1,'a',2),(1,'b',1),(2,'a',2),(2,'b',3),(3,'a',2),(3,'b',1)])
+test3 = ([1,2,3],1,[3],[(1,'a',2),(1,'b',1),(2,'a',2),(2,'b',3),(3,'a',2),(3,'b',1)])
