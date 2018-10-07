@@ -10,8 +10,6 @@ sigma = ['a', 'b']
 -- states that exist, start states, finish states -- Q, a, Q'
 type FSM = ([Int], Int, [Int], [(Int,Char,Int)])
 
-test1 = ([1,2,3,4,5], 1, [4,5], [(1,'a',2), (1,'b',3), (2,'a',4)])
-
 -- function to help other functions
 unique :: Eq a => [a] -> Bool
 unique [] = True
@@ -30,7 +28,7 @@ checkFSM (qs, s, fs, ts) = unique qs && elem s qs && and[elem f qs | f <- fs] &&
 -- Gives the transition function of the machine as a function
 -- i.e., delta m q a = the state machine m goes to when reading a in state q
 delta :: FSM -> Int -> Char -> Int
-delta (qs, s, fs, ts) q a = if a == q && b == s' then f else delta (qs, s, fs, ts) q s'
+delta (qs, s, fs, ((a,b,f):ts)) q s' = if a == q && b == s' then f else delta (qs, s, fs, ts) q s'
 
 -- Gives the delta* function (recursive in w)
 delta_star :: FSM -> Int -> [Char] -> Int
