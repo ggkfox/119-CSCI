@@ -58,7 +58,7 @@ accept2 (qs, s, fs, ts) w = accept2_aux (qs, s, fs, ts) s w
 -- Define a machine that accepts exactly the strings with an odd number of b's
 -- and test it adequately
 test1 :: FSM
-test = ([1,2],1,[2],[(1,'a',1),(1,'b',2),(2,'a',2),(2,'b',1)])
+test1 = ([1,2],1,[2],[(1,'a',1),(1,'b',2),(2,'a',2),(2,'b',1)])
 
 -- Define a machine that accepts exactly the strings that do not contain "aab"
 -- as a substring and test it adequately
