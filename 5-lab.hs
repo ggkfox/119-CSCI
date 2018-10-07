@@ -24,7 +24,8 @@ unique (x:xs) = (not (elem x xs)) && (unique xs)
 -- (4) Transition relation is a function from qs and sigma to qs (exactly one
 --     output state for each state and letter from sigma)
 checkFSM :: FSM -> Bool
-checkFSM (qs, s, fs, ts) = unique qs && elem s qs && and[elem f qs | f <- fs] && and[elem b sigma | (a,b,c) <- ts] && unique [(a,b) | (a,b,c) <- ts]
+-- checkFSM (qs, s, fs, ts) = unique qs && elem s qs && and[elem f qs | f <- fs] && and[elem b sigma | (a,b,c) <- ts] && unique [(a,b) | (a,b,c) <- ts]
+checkFSM (qs, s, fs, ts) = [unique qs && elem s qs , and[elem f qs | f <- fs] , and[elem b sigma | (a,b,c) <- ts] , unique [(a,b) | (a,b,c) <- ts]]
 --               states are unique | start is unique |  finish states exist   |       letter is in sigma        |   no state points to 2 diff states
 
 -- Gives the transition function of the machine as a function
