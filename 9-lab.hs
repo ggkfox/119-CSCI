@@ -1,3 +1,4 @@
+-- joshua holland
 -- Lab 9: Derivative-based conversion from RE' to FSM (Brzozowski Construction)
 
 import Data.List
@@ -161,23 +162,39 @@ byp (Cat' rs) = and [ byp r1 | r1 <- rs]
 byp (Star' r1) = True
 
 
+
 -- Regular-expression derivatives (aka left quotients) on extended REs,
 -- computed directly by recursion.
 deriv :: Char -> RE' -> RE'
 deriv a Zero = Zero
 deriv a One  = One
 deriv a (Letter' b) = if a == b then One else Zero
-deriv a (Union' rs) = simp $ Union' [deriv a r1 | r1 <- rs]
-deriv a (Cat' (r1:r2)) = simp $ if (byp r1) then Union' ([Cat' ([(deriv a r1]) ++ r2) ++ [(deriv a r3) | r3 <- r2])
-                                else Cat' ([deriv a r1] ++ r2)
-deriv a (Star' r1) = simp (Cat'  ([deriv a r1]) ++ [Star' r1])
+deriv a (Union' r) = Union'(map (deriv a) r)
+deriv a (Cat' r) = Union'(catHelper r) where
+    catHelper [] = []
+    catHelper (r:rs) = Cat'(deriv a r : catHelper rs):if byp r then catHelper rs  else []
+deriv a (Star' r) = Cat'[deriv a r, Star' r]
 
+
+
+sigma :: [char]
+sigma = "ab"
 -- Convert an RE' to an FSM using the derivative (Brzozowski) construction.
 -- States are SIMPLIFIED extended REs.  Note: to construct all the states,
 -- you will have to use another closure process.
-conv :: RE' -> FSM RE'
-conv r = undefined
+-- conv :: RE' -> FSM RE'
+-- conv r = (qs, ss, fs, ts) where
+--     qs = unclosure [r] (f r) where
+--         f r = [simp (deriv s r) | s <- sigma]
+--     ss = simp r
+--     fs = undefined
+--     ts = undefined
 
 
+testFSM = FSM{states = [0, 1], start = 0, finals = [1], delta = [(0, 'a', 1), (0, 'b', 0), (1,
 -- Test, and show your tests! You may copy code from previous labs to help.
+--all strings that end in aa or ab
+--a(b + ab)*(1 + a)
 
+-- *Main> intify (conv (re "abab.+*.1a+."))
+--([0,1,2,3], 2, [1,3], [0/a>0,0/b>0,1/a>0,1/b>3,2/a>3,2/b>0,3/a>1,3/b>3])
